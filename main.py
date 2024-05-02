@@ -1,26 +1,49 @@
-class Time:
-    __time = 86400
+from random import randint
+from string import ascii_letters
+class Verify:
+    letters_rus = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя .'
+    letters_rus_upper = letters_rus.upper()
+    letters = letters_rus + letters_rus_upper + ascii_letters
 
-    def __init__(self, sec):
-        if type(sec) != int:
-            raise TypeError('Секунды - целое число')
-        self.sec = sec % self.__time
+    def verify1(self, value):
+        if type(value) != str:
+            raise TypeError('Тип и продавец должны быть строками')
+        elif len(value.strip(self.letters)) != 0:
+            raise TypeError('Принямаются только буквы')
+    def verify2(self, value):
+        if type(value) != int and type(value) != float:
+            raise TypeError('Вес, размер и цена должны быть числами')
 
-    @classmethod
-    def __get_form(cls, x):
-        return str(x).rjust(2, '0')
+class Descript(Verify):
 
-    def  __add__(self, other):
-        if type(other) != int:
-            raise TypeError('Секунды - целое число')
-        return Time(self.sec + other)
+    def __set_name__(self, owner, name):
+        self.name = "__" + name
+    def __get__(self, instance, owner):
+        print(f'Возвращаю {self.name}')
+        return instance.__dict__[self.name]
 
-    def get_time(self):
-        s = self.sec % 60
-        n = (self.sec // 60) % 60
-        h = (self.sec // 3600) % 24
-        return f'{self.__get_form(h)}:{self.__get_form(n)}:{self.__get_form(s)}'
+    def __set__(self, instance, value):
+        self.verify1(value)
+        print(f'Меняю значение {self.name} на {value}')
+        instance.__dict__[self.name] = value
+class Product(Verify):
+    seller = Descript()
+    def __init__(self, weight, size, tip, seller, price):
+        self.verify1(tip)
+        self.verify2(weight)
+        self.verify2(size)
+        self.verify2(price)
+        self.weight = weight
+        self.size = size
+        self.tip = tip
+        self.seller = seller
+        self.price = price
+        self.__code = randint(1000, 9999)
+    # __code доступен только для чтения, обращаться через code
 
-t1 = Time(1000)
-t1 += 100
-print(t1.get_time())
+    def get_code(self):
+        return self.__code
+
+    code = property(get_code)
+note = Product(0.1, 10, 'note', 'Vova', 100)
+print(note.code)
