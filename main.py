@@ -1,9 +1,9 @@
-from random import randint
 from string import ascii_letters
 class Verify:
     letters_rus = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя .'
     letters_rus_upper = letters_rus.upper()
     letters = letters_rus + letters_rus_upper + ascii_letters
+    code1 = 0
 
     def verify1(self, value):
         if type(value) != str:
@@ -28,6 +28,12 @@ class Descript(Verify):
         instance.__dict__[self.name] = value
 class Product(Verify):
     seller = Descript()
+    n = 1
+
+    def create_code(self):
+        self.__code = Product.n
+        Product.n += 1
+
     def __init__(self, weight, size, tip, seller, price):
         self.verify1(tip)
         self.verify2(weight)
@@ -38,12 +44,14 @@ class Product(Verify):
         self.tip = tip
         self.seller = seller
         self.price = price
-        self.__code = randint(1000, 9999)
+        self.create_code()
+
+
     # __code доступен только для чтения, обращаться через code
 
     def get_code(self):
         return self.__code
 
-    code = property(get_code)
-note = Product(0.1, 10, 'note', 'Vova', 100)
-print(note.code)
+    def set_code(self, value):
+        self.__code = value
+    code = property(get_code, set_code)
