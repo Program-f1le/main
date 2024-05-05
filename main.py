@@ -18,6 +18,7 @@ class Descript(Verify):
 
     def __set_name__(self, owner, name):
         self.name = "__" + name
+
     def __get__(self, instance, owner):
         print(f'Возвращаю {self.name}')
         return instance.__dict__[self.name]
@@ -26,6 +27,7 @@ class Descript(Verify):
         self.verify1(value)
         print(f'Меняю значение {self.name} на {value}')
         instance.__dict__[self.name] = value
+
 class Product(Verify):
     seller = Descript()
     n = 1
@@ -46,6 +48,8 @@ class Product(Verify):
         self.price = price
         self.create_code()
 
+    def __str__(self):
+        return f'Цена - {self.price} руб, тип - {self.tip}, вес - {self.weight} кг, размер - {self.size} см, продавец - {self.seller}'
 
     # __code доступен только для чтения, обращаться через code
 
@@ -54,4 +58,5 @@ class Product(Verify):
 
     def set_code(self, value):
         self.__code = value
+
     code = property(get_code, set_code)
